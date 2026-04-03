@@ -1,0 +1,39 @@
+{
+  "name": "ibci-language",
+  "displayName": "IBC-Inter Language Support",
+  "description": "Syntax highlighting and basic language support for IBC-Inter (.ibci) files",
+  "version": "0.0.1",
+  "publisher": "ibci",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ibci",
+        "aliases": [
+          "IBC-Inter",
+          "ibci"
+        ],
+        "extensions": [
+          ".ibci"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ibci",
+        "scopeName": "source.ibci",
+        "path": "./syntaxes/ibci.tmLanguage.json"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haberzero/intent-behavior-code-inter"
+  }
+}
