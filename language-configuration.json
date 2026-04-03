@@ -24,11 +24,5 @@
   "indentationRules": {
     "increaseIndentPattern": "^\\s*(func|class|if|elif|else|for|while|try|except|finally|llm)\\b.*:$",
     "decreaseIndentPattern": "^\\s*(elif|else|except|finally)\\b.*:$"
-  },
-  "folding": {
-    "markers": {
-      "start": "^\\s*(llm)\\b",
-      "end": "^\\s*(llmend)\\b"
-    }
   }
 }
