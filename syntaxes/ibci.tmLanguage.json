@@ -5,7 +5,7 @@
   "fileTypes": ["ibci"],
   "patterns": [
     { "include": "#comments" },
-    { "include": "#llm_blocks" },
+    { "include": "#llm_function_def" },
     { "include": "#intent_markers" },
     { "include": "#behavior_markers" },
     { "include": "#keywords" },
@@ -14,6 +14,7 @@
     { "include": "#strings" },
     { "include": "#numbers" },
     { "include": "#var_refs" },
+    { "include": "#func_calls" },
     { "include": "#operators" }
   ],
   "repository": {
@@ -25,84 +26,98 @@
         }
       ]
     },
-    "llm_blocks": {
+    "llm_function_def": {
+      "name": "meta.llm-function-def.ibci",
+      "begin": "(^|\\n)\\s*(llm)\\s+([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)",
+      "beginCaptures": {
+        "2": { "name": "keyword.other.llm-definition.ibci" },
+        "3": { "name": "entity.name.function.llm.ibci" }
+      },
+      "end": "(^|\\n)\\s*(llmend)\\s*(?=\\n|$)",
+      "endCaptures": {
+        "2": { "name": "keyword.other.llm-definition.ibci" }
+      },
+      "patterns": [
+          {
+            "begin": "\\(",
+            "end": "\\)",
+            "patterns": [
+              { "include": "#types" },
+              {
+                "match": "\\b([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)\\b",
+                "name": "variable.parameter.ibci"
+              }
+            ]
+          },
+          {
+            "match": "->\\s*([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)",
+            "captures": {
+              "1": { "name": "support.type.primitive.ibci" }
+            }
+          },
+          { "include": "#llm_sys_block" },
+          { "include": "#llm_user_block" },
+          { "include": "#llm_keywords" },
+          { "include": "#var_refs" },
+          { "include": "#strings" }
+        ]
+    },
+    "llm_func_params": {
       "patterns": [
         {
-          "name": "meta.llm-function.ibci",
-          "begin": "(?<=^|\\n)\\s*(llm)\\s+([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)",
-          "beginCaptures": {
-            "1": { "name": "keyword.llm-definition.ibci" },
-            "2": { "name": "entity.name.function.ibci" }
-          },
-          "end": "(?<=^|\\n)\\s*(llmend)\\s*(?=\\n|$)",
-          "endCaptures": {
-            "1": { "name": "keyword.llm-definition.ibci" }
-          },
-          "patterns": [
-            { "include": "#llm_sys_block" },
-            { "include": "#llm_user_block" },
-            { "include": "#llm_keywords" },
-            { "include": "#var_refs" },
-            { "include": "#strings" }
-          ]
-        },
-        {
-          "name": "meta.llm-sys-block.ibci",
-          "begin": "(?<=\\n|^)\\s*(__sys__)\\s*(?=\\n)",
-          "beginCaptures": {
-            "1": { "name": "keyword.llm-role.ibci" }
-          },
-          "end": "(?<=\\n)\\s*(?=__user__|llmend|@)",
-          "patterns": [
-            {
-              "name": "meta.llm-content",
-              "contentName": "text.plain",
-              "match": ".+"
-            }
-          ]
-        },
-        {
-          "name": "meta.llm-user-block.ibci",
-          "begin": "(?<=\\n|^)\\s*(__user__)\\s*(?=\\n)",
-          "beginCaptures": {
-            "1": { "name": "keyword.llm-role.ibci" }
-          },
-          "end": "(?<=\\n)\\s*(?=llmend|@)",
-          "patterns": [
-            { "include": "#var_refs" },
-            { "include": "#strings" },
-            {
-              "name": "meta.llm-content",
-              "contentName": "text.plain",
-              "match": ".+"
-            }
-          ]
+          "name": "variable.parameter.ibci",
+          "match": "\\b([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)\\b"
         }
       ]
     },
     "llm_keywords": {
       "patterns": [
         {
-          "name": "keyword.llm-retry.ibci",
-          "match": "\\b(retry|llmretry|llmexcept)\\b"
-        },
-        {
           "name": "keyword.llm-role.ibci",
           "match": "__(sys|user)__"
+        },
+        {
+          "name": "keyword.llm-retry.ibci",
+          "match": "\\b(retry|llmretry|llmexcept)\\b"
         }
       ]
+    },
+    "llm_sys_block": {
+      "name": "meta.llm-sys-block.ibci",
+      "begin": "\\n(\\s*)(__sys__)\\s*\\n",
+      "beginCaptures": {
+        "2": { "name": "keyword.llm-role.ibci" }
+      },
+      "end": "(?=^\\s*(__user__|llmend))",
+      "patterns": [
+        { "include": "#var_refs" }
+      ],
+      "contentName": "text.plain.ibci"
+    },
+    "llm_user_block": {
+      "name": "meta.llm-user-block.ibci",
+      "begin": "\\n(\\s*)(__user__)\\s*\\n",
+      "beginCaptures": {
+        "2": { "name": "keyword.llm-role.ibci" }
+      },
+      "end": "(?=^\\s*llmend)",
+      "patterns": [
+        { "include": "#var_refs" },
+        { "include": "#strings" }
+      ],
+      "contentName": "text.plain.ibci"
     },
     "intent_markers": {
       "patterns": [
         {
           "name": "meta.intent.marker.ibci",
-          "match": "@[+!\\-]?(?=\\s|\\n|$)"
+          "match": "@[@\\+\\!\\-]?(?=\\s|\\n|$)"
         },
         {
           "name": "meta.intent.statement.ibci",
-          "begin": "(?<=\\n|^)\\s*(intent)\\s+",
+          "begin": "(^|\\n)\\s*(intent)\\s+",
           "beginCaptures": {
-            "1": { "name": "keyword.control.ibci" }
+            "2": { "name": "keyword.control.ibci" }
           },
           "end": "(?=\\n)"
         }
@@ -111,11 +126,11 @@
     "behavior_markers": {
       "patterns": [
         {
-          "name": "meta.behavior.marker.ibci",
+          "name": "meta.behavior.marker.start.ibci",
           "match": "@[a-zA-Z]*~"
         },
         {
-          "name": "meta.behavior.brackets.ibci",
+          "name": "meta.behavior.marker.end.ibci",
           "match": "~"
         }
       ]
@@ -219,12 +234,23 @@
     "var_refs": {
       "patterns": [
         {
-          "name": "variable.other.interpolation.ibci",
-          "match": "\\$[a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*"
+          "name": "variable.other.llm-ref.ibci",
+          "match": "\\$([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)"
         },
         {
-          "name": "variable.other.interpolation.ibci",
+          "name": "variable.other.llm-ref.ibci",
           "match": "\\$\\{[^}]+\\}"
+        }
+      ]
+    },
+    "func_calls": {
+      "patterns": [
+        {
+          "name": "meta.function-call.ibci",
+          "match": "([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)\\s*\\(",
+          "captures": {
+            "1": { "name": "entity.name.function.call.ibci" }
+          }
         }
       ]
     },
@@ -232,7 +258,7 @@
       "patterns": [
         {
           "name": "keyword.operator.assignment.ibci",
-          "match": "(=|\\+=|-=|\\*=|/=|%=|->)"
+          "match": "(=|\\+=|\\-=|\\*=|/=|%=|->)"
         },
         {
           "name": "keyword.operator.comparison.ibci",
