@@ -1,6 +1,6 @@
-# IBC-Inter VS Code Extension
+# Visual Studio Code Extension For IBC-Inter
 
-This extension provides syntax highlighting and basic language support for IBC-Inter (`.ibci`) files in Visual Studio Code.
+This extension provides basic syntax highlighting support for IBC-Inter (`.ibci`) files in Visual Studio Code.
 
 Demo Phase, Please Use with Caution.
 
