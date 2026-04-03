@@ -1,0 +1,252 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Robot/robotframework-tmLanguage/master/grammars/first-mate/../../schemas/tmLanguage.schema.json",
+  "name": "IBC-Inter",
+  "scopeName": "source.ibci",
+  "fileTypes": ["ibci"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#llm_blocks" },
+    { "include": "#intent_markers" },
+    { "include": "#behavior_markers" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#var_refs" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.hash.ibci",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "llm_blocks": {
+      "patterns": [
+        {
+          "name": "meta.llm-function.ibci",
+          "begin": "(?<=^|\\n)\\s*(llm)\\s+([a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*)",
+          "beginCaptures": {
+            "1": { "name": "keyword.llm-definition.ibci" },
+            "2": { "name": "entity.name.function.ibci" }
+          },
+          "end": "(?<=^|\\n)\\s*(llmend)\\s*(?=\\n|$)",
+          "endCaptures": {
+            "1": { "name": "keyword.llm-definition.ibci" }
+          },
+          "patterns": [
+            { "include": "#llm_sys_block" },
+            { "include": "#llm_user_block" },
+            { "include": "#llm_keywords" },
+            { "include": "#var_refs" },
+            { "include": "#strings" }
+          ]
+        },
+        {
+          "name": "meta.llm-sys-block.ibci",
+          "begin": "(?<=\\n|^)\\s*(__sys__)\\s*(?=\\n)",
+          "beginCaptures": {
+            "1": { "name": "keyword.llm-role.ibci" }
+          },
+          "end": "(?<=\\n)\\s*(?=__user__|llmend|@)",
+          "patterns": [
+            {
+              "name": "meta.llm-content",
+              "contentName": "text.plain",
+              "match": ".+"
+            }
+          ]
+        },
+        {
+          "name": "meta.llm-user-block.ibci",
+          "begin": "(?<=\\n|^)\\s*(__user__)\\s*(?=\\n)",
+          "beginCaptures": {
+            "1": { "name": "keyword.llm-role.ibci" }
+          },
+          "end": "(?<=\\n)\\s*(?=llmend|@)",
+          "patterns": [
+            { "include": "#var_refs" },
+            { "include": "#strings" },
+            {
+              "name": "meta.llm-content",
+              "contentName": "text.plain",
+              "match": ".+"
+            }
+          ]
+        }
+      ]
+    },
+    "llm_keywords": {
+      "patterns": [
+        {
+          "name": "keyword.llm-retry.ibci",
+          "match": "\\b(retry|llmretry|llmexcept)\\b"
+        },
+        {
+          "name": "keyword.llm-role.ibci",
+          "match": "__(sys|user)__"
+        }
+      ]
+    },
+    "intent_markers": {
+      "patterns": [
+        {
+          "name": "meta.intent.marker.ibci",
+          "match": "@[+!\\-]?(?=\\s|\\n|$)"
+        },
+        {
+          "name": "meta.intent.statement.ibci",
+          "begin": "(?<=\\n|^)\\s*(intent)\\s+",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.ibci" }
+          },
+          "end": "(?=\\n)"
+        }
+      ]
+    },
+    "behavior_markers": {
+      "patterns": [
+        {
+          "name": "meta.behavior.marker.ibci",
+          "match": "@[a-zA-Z]*~"
+        },
+        {
+          "name": "meta.behavior.brackets.ibci",
+          "match": "~"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.ibci",
+          "match": "\\b(if|elif|else|for|while|in|return|break|continue|pass)\\b"
+        },
+        {
+          "name": "keyword.control.exception.ibci",
+          "match": "\\b(try|except|finally|raise)\\b"
+        },
+        {
+          "name": "keyword.declaration.ibci",
+          "match": "\\b(func|class|global|var|callable)\\b"
+        },
+        {
+          "name": "keyword.import.ibci",
+          "match": "\\b(import|from|as)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.ibci",
+          "match": "\\b(and|or|not|is)\\b"
+        },
+        {
+          "name": "keyword.self.ibci",
+          "match": "\\b(self)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "support.type.primitive.ibci",
+          "match": "\\b(int|float|str|bool|list|dict|tuple|var)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.ibci",
+          "match": "\\b(True|False|None)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.ibci",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "include": "#escape_sequences" }
+          ]
+        },
+        {
+          "name": "string.quoted.single.ibci",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "include": "#escape_sequences" }
+          ]
+        },
+        {
+          "name": "string.quoted.raw.ibci",
+          "match": "r(\"[^\"]*\"|'[^']*')"
+        }
+      ]
+    },
+    "escape_sequences": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.ibci",
+          "match": "\\\\[nrt\\\\\"']"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.integer.hex.ibci",
+          "match": "0[xX][0-9a-fA-F]+"
+        },
+        {
+          "name": "constant.numeric.integer.bin.ibci",
+          "match": "0[bB][01]+"
+        },
+        {
+          "name": "constant.numeric.float.ibci",
+          "match": "\\b\\d+\\.\\d+([eE][+-]?\\d+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.dec.ibci",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "var_refs": {
+      "patterns": [
+        {
+          "name": "variable.other.interpolation.ibci",
+          "match": "\\$[a-zA-Z_\\u4e00-\\u9fff][a-zA-Z0-9_\\u4e00-\\u9fff]*"
+        },
+        {
+          "name": "variable.other.interpolation.ibci",
+          "match": "\\$\\{[^}]+\\}"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.ibci",
+          "match": "(=|\\+=|-=|\\*=|/=|%=|->)"
+        },
+        {
+          "name": "keyword.operator.comparison.ibci",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.ibci",
+          "match": "(\\+|\\-|\\*|/|%)"
+        },
+        {
+          "name": "keyword.operator.bitwise.ibci",
+          "match": "(&|\\||\\^|~|<<|>>)"
+        }
+      ]
+    }
+  }
+}
