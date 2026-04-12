@@ -2,6 +2,8 @@
 
 This extension provides basic syntax highlighting support for IBC-Inter (`.ibci`) files in Visual Studio Code.
 
+WARNING: **All Created by agents, pure vibe coding, ref with caution**
+
 Demo Phase, Please Use with Caution.
 
 ## Features
